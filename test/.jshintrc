@@ -8,5 +8,5 @@
     "unused": true,
     "strict": true,
     "node": true,
-    "predef": ["describe", "it", "before", "after"]
+    "predef": ["describe", "it", "before", "after", "beforeEach", "afterEach"]
 }

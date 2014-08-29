@@ -151,7 +151,6 @@ describe("mongoose-version2", function() {
         });
 
         it("refuse to save older version than current", function(done) {
-            var _spy1 = false, _spy2 = false;
 
             var race = new Article({title: "The race"});
             race.saveQ()
@@ -163,16 +162,15 @@ describe("mongoose-version2", function() {
                 return race2.saveQ();
             })
             .then(function(race2saved) {
-                var spy1 = function() { _spy1 = true; },
-                    spy2 = function() { _spy2 = true; };
-
                 race.title = "The race update";
-                return race.saveQ()
-                .then(spy1, spy2);
+                return Q.Promise(function(resolve, reject) {
+                    race.save(function(err, race) {
+                        expect(!!err).to.be(true);
+                        resolve();
+                    });
+                });
             })
             .then(function() {
-                expect(_spy1).to.be(false);
-                expect(_spy2).to.be(true);
                 return Article.find().execQ();
             })
             .then(function(articles) {
