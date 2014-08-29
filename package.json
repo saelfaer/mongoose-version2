@@ -1,24 +1,22 @@
 {
-  "name": "mongoose-version",
-  "description": "Mongoose plugin to save old versions of saved documents",
+  "name": "mongoose-version2",
+  "description": "Mongoose plugin for document versioning.",
   "version": "0.2.4",
-  "main": "lib/version.js",
-  "repository": "git://github.com/saintedlama/mongoose-version.git",
-  "author": "Christoph Walcher <christoph.walcher@gmail.com>",
+  "main": "lib/index.js",
+  "repository": "git://github.com/fghibellini/mongoose-version2",
+  "author": "Filippo Ghibellini <http://github.com/fghibellini/mongoose-version2>",
   "license": "BSD",
   "keywords": [
     "mongoose",
     "plugin",
     "version"
   ],
-  "dependencies": {
-    "mongoose": "~3.8.12",
-    "debug": "~0.8.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "mocha": "~1.20.0",
-    "mongoose-text-search": "0.0.2",
-    "chai": "~1.9.1"
+    "expect.js": "^0.3.1",
+    "mocha": "^1.21.4",
+    "mongoose-q": "0.0.10",
+    "q": "^1.0.1"
   },
   "scripts": {
     "test": "mocha --recursive -R spec test/",
