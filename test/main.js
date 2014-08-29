@@ -1,7 +1,7 @@
 "use strict";
 
 var expect = require("expect.js"),
-    Q = require("q");
+    _ = require("lodash");
 
 var mongoose = require("mongoose-q")(),
     Schema = mongoose.Schema;
@@ -54,7 +54,7 @@ describe("mongoose-version2", function() {
                 assert(saved, "Unable to save!");
 
                 expect(saved).to.not.have.property("__v");
-                expect(saved.__ver).to.be(0);
+                expect(saved._v).to.be(0);
 
                 return Article.VersionModel.find().count().execQ()
                 .then(function(count) {
@@ -68,7 +68,7 @@ describe("mongoose-version2", function() {
                 assert(saved, "Unable to save!");
 
                 expect(saved).to.not.have.property("__v");
-                expect(saved.__ver).to.be(1);
+                expect(saved._v).to.be(1);
 
                 return Article.VersionModel.find().count().execQ()
                 .then(function(count) {
@@ -81,7 +81,7 @@ describe("mongoose-version2", function() {
             .then(function(saved) {
                 assert(saved, "Unable to save!");
                 expect(saved).to.not.have.property("__v");
-                expect(saved.__ver).to.be(2);
+                expect(saved._v).to.be(2);
 
                 return Article.VersionModel.find().count().execQ()
                 .then(function(count) {
@@ -103,7 +103,7 @@ describe("mongoose-version2", function() {
                 assert(saved, "Unable to save!");
 
                 expect(saved).to.not.have.property("__v");
-                expect(saved.__ver).to.be(3);
+                expect(saved._v).to.be(3);
 
                 return Article.VersionModel.find().count().execQ()
                 .then(function(count) {
@@ -181,6 +181,47 @@ describe("mongoose-version2", function() {
             })
             .done(done, done);
 
+        });
+
+    });
+
+    describe("dateTracking", function() {
+
+        before(function(done) {
+            connection.db.dropDatabase(done);
+        });
+
+        it("should track the creation and modification dates", function(done) {
+            var timeMachine = new Article({title: "Timemachine invented!"});
+
+            timeMachine.saveQ()
+            .then(function(savedArticle) {
+                expect(!!savedArticle._modified).to.be(true);
+                expect(!!savedArticle._created).to.be(true);
+                expect(savedArticle._modified).to.be(savedArticle._created);
+                savedArticle.content = "<top secret>";
+                return savedArticle.saveQ();
+            })
+            .then(function(savedArticle) {
+                expect(!!savedArticle._modified).to.be(true);
+                expect(!!savedArticle._created).to.be(true);
+                expect(savedArticle._modified).to.not.be(savedArticle._created);
+                savedArticle.content = "<top secret ;) >";
+                return savedArticle.saveQ();
+            })
+            .then(function(savedArticle) {
+                expect(!!savedArticle._modified).to.be(true);
+                expect(!!savedArticle._created).to.be(true);
+                expect(savedArticle._modified).to.not.be(savedArticle._created);
+
+                return Article.VersionModel.find().execQ();
+            })
+            .then(function(versions) {
+                expect(versions).to.have.length(2);
+                expect(_.compact(_.pluck(versions,"_created"))).to.have.length(2);
+                expect(_.compact(_.pluck(versions,"_modified"))).to.have.length(2);
+            })
+            .done(done, done);
         });
 
     });
